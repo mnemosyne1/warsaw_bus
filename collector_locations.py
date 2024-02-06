@@ -8,9 +8,9 @@ key = get_key()
 limit = 'type=1'  # only buses
 
 collected, prev_list = [], []
-prev_collected, prev_repeated, repeated, late = 0, 0, 0, 0
-start_time = current_time = datetime.datetime.now()
+late = 0
 link = create_link(base, key, limit)
+start_time = current_time = datetime.datetime.now()
 while datetime.datetime.now() - start_time < datetime.timedelta(hours=1):
     try:
         current_time = datetime.datetime.now()
@@ -24,10 +24,6 @@ while datetime.datetime.now() - start_time < datetime.timedelta(hours=1):
                     late = late + 1
                 else:
                     collected.append(bus)
-        else:
-            print("Repeated", file=sys.stderr)
-        prev_repeated = repeated
-        prev_collected = len(collected)
         prev_list = new_list
     except Exception:
         print("Exception in operating on received data\n", file=sys.stderr)
@@ -37,4 +33,3 @@ print(df)
 filename = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + '.csv'
 df.to_csv(filename, index=False)
 print(f'{late=}', file=sys.stderr)
-print(f'{repeated=}', file=sys.stderr)

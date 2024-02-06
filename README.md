@@ -22,9 +22,6 @@ For now – none. But probably coming soon
 # The project is still in development.
 
 ## TODO list:
-- test the punctuality analiser (from what I've checked, this should work on
-[this file](https://drive.google.com/file/d/1OO0abfNr4qOItiduZ1uYgVg9JNRAl3Cy/view?usp=sharing),
-almost not tested on others so no guarantees yet)
 - prepare the code to be installable with pip install
 - probably try to split check_brigade function in [analiser_time.py](analiser_time.py)
 - remove commented code, have all other comments be in one language
@@ -41,6 +38,7 @@ almost not tested on others so no guarantees yet)
 
 ## TODO possible ideas:
 - histogram of bus speeds
+- visualisation of delays
 - map showing all buses at one particular moment
 - maybe some regression of speed from geographical coordinates
 - ...

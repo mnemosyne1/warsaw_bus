@@ -13,14 +13,16 @@ def calculate_speed(r):
     if time_diff <= 10:
         return None
     distance = geodesic((r['P_lat'], r['P_lon']), (r['Lat'], r['Lon'])).km
-    ans = distance/time_diff * 3600
+    ans = distance / time_diff * 3600
     if ans > 100:  # odsiewa oczywiste błędy systemu raportowania GPS
         return None
     return round(ans, 1)
 
 
-def analise_speed(df):
+def analise_speed(df, line):
     speed_df = df.drop('Brigade', axis=1).sort_values(by=['VehicleNumber', 'Time'])
+    if line != '':
+        speed_df = speed_df[speed_df['Lines'] == line]
     speed_df[['P_lat', 'P_lon', 'P_time']] = speed_df[['Lat', 'Lon', 'Time']].shift(1)
     speed_df = speed_df[speed_df.VehicleNumber.eq(speed_df.VehicleNumber.shift())]
     print("Calculating speeds... (this may be unexpectedly long)", file=sys.stderr)
@@ -32,5 +34,5 @@ def analise_speed(df):
     plot_on_map(speed_df, 'Speed', 'Speed')
 
 
-general_df = get_data()
-analise_speed(general_df)
+general_df, bus = get_data()
+analise_speed(general_df, bus)

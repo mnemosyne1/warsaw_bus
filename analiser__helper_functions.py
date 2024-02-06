@@ -9,9 +9,14 @@ def get_data():
         be given as an argument when calling the script"""
     __parser = argparse.ArgumentParser()
     __parser.add_argument('datafile', help='name of file with bus records')
+    __parser.add_argument('line', help='number of line to be checked (default = all)', default='', nargs='?')
     args = __parser.parse_args()
+    __line = str.capitalize(args.line)
     with open(args.datafile, 'r') as datafile:
-        return pd.read_csv(datafile, dtype={'Lines': str, 'Brigade': str})
+        res = pd.read_csv(datafile, dtype={'Lines': str, 'Brigade': str})
+        if __line != '' and __line not in res['Lines'].values:
+            exit('No records were found for the given line in the given file!')
+        return res, __line
 
 
 def plot_on_map(df, plotted, plotted_name):

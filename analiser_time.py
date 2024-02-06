@@ -7,24 +7,24 @@ import sys
 import matplotlib.pyplot as plt
 
 
-def define_checked(bus_list):
-    bus_list = bus_list['Lines'].drop_duplicates()
-    print(bus_list)
-    filename = 'recorded_buses.csv'
-    while True:
-        try:
-            bus_list.to_csv(filename, mode='x')
-            break
-        except FileExistsError:
-            filename = '_' + filename
-    print('Full list of recorded buses and brigades is available in file: ' + filename)
-    while True:
-        checked_line = str.capitalize(input('Number of line to be analysed: '))
-        if not str(checked_line) in bus_list.values:
-            print('No records were found for line ' + str(checked_line) + '!')
-            continue
-        os.remove(filename)
-        return checked_line
+# def define_checked(bus_list):
+#     bus_list = bus_list['Lines'].drop_duplicates()
+#     print(bus_list)
+#     filename = 'recorded_buses.csv'
+#     while True:
+#         try:
+#             bus_list.to_csv(filename, mode='x')
+#             break
+#         except FileExistsError:
+#             filename = '_' + filename
+#     print('Full list of recorded buses and brigades is available in file: ' + filename)
+#     while True:
+#         checked_line = str.capitalize(input('Number of line to be analysed: '))
+#         if not str(checked_line) in bus_list.values:
+#             print('No records were found for line ' + str(checked_line) + '!')
+#             continue
+#         os.remove(filename)
+#         return checked_line
 
 
 def create_2signs(n):
@@ -68,7 +68,10 @@ def get_stop_index(timetable, time):
     # print(time)
     time = timetable.loc[timetable['time'] > time]
     # print(tmp)
-    return time.index[0]
+    if not time.empty:
+        return time.index[0]
+    else:
+        return None
 
 
 def create_num_time(time):  # TODO: TMP
@@ -79,7 +82,7 @@ def create_num_time(time):  # TODO: TMP
 def closest_point(lat_point, lon_point, lat_line_start, lon_line_start, lat_line_end, lon_line_end):
     line_v = [lat_line_end - lat_line_start, lon_line_end - lon_line_start]
     point_v = [lat_point - lat_line_start, lon_point - lon_line_start]
-    s = sum(a**2 for a in line_v)
+    s = sum(a ** 2 for a in line_v)
     if s != 0:
         p = max(0.0, min(1.0, sum(a * b for a, b in zip(point_v, line_v)) / s))
         closest_point_lat = lat_line_start + p * (lat_line_end - lat_line_start)
@@ -90,16 +93,18 @@ def closest_point(lat_point, lon_point, lat_line_start, lon_line_start, lat_line
     return geodesic((lat_point, lon_point), (closest_point_lat, closest_point_lon)).m
 
 
-def check_brigade(data, table, brigade):
+def check_brigade(data, table, brigade, line):
     table.index.name = 'idx'
-    table = (table.loc[(table['line'] == bus) & (table['brigade'] == brigade)].
+    table = (table.loc[(table['line'] == line) & (table['brigade'] == brigade)].
              sort_values(by=['time', 'idx']).drop_duplicates().reset_index(drop=True))
     table['time'] = table['time'].apply(convert_to_time)
-    data = (data.loc[(data['Lines'] == bus) & (data['Brigade'] == brigade)].
+    data = (data.loc[(data['Lines'] == line) & (data['Brigade'] == brigade)].
             sort_values(by='Time').drop_duplicates().reset_index(drop=True))
     j = 0
     data['Time'] = data['Time'].apply(drop_date)
     i = get_stop_index(table, data['Time'][0])
+    if i is None:
+        return
     timetable_series = table.loc[i]
     location_series = data.loc[0]
     prev_lat, prev_lon = location_series['Lat'], location_series['Lon']
@@ -121,13 +126,15 @@ def check_brigade(data, table, brigade):
                 delays.append(delay / 60)
             i = i + 1
             if i == table.shape[0]:
-                break
+                return
             timetable_series = table.loc[i]
             s_dist = closest_point(timetable_series['Lat'], timetable_series['Lon'],
                                    prev_lat, prev_lon, cur_lat, cur_lon)
         elif dist > 500 and dist > 2 * s_dist:  # we're far from stop and getting farther
             print('Skipping stop!', file=sys.stderr)
             i = get_stop_index(table, data['Time'][j])
+            if i is None:
+                return
             timetable_series = table.loc[i]
             s_dist = closest_point(timetable_series['Lat'], timetable_series['Lon'],
                                    prev_lat, prev_lon, cur_lat, cur_lon)
@@ -135,7 +142,7 @@ def check_brigade(data, table, brigade):
             print('Bus in move', file=sys.stderr)
             j = j + 1
             if j == data.shape[0]:
-                break
+                return
             location_series = data.loc[j]
         if (location_series['Lat'], location_series['Lon']) != (cur_lat, cur_lon):
             prev_lat, prev_lon = cur_lat, cur_lon
@@ -145,17 +152,22 @@ def plot_delays(delay):
     plt.hist(delay)
     plt.xlabel('Delay')
     plt.ylabel('Frequency')
-    plt.title('Delays of line ' + bus)
+    if bus != '':
+        plt.title('Delays of line ' + bus)
+    else:
+        plt.title('Delays of all lines')
     plt.show()
 
 
 ttable = pd.read_csv('timetable_coords.csv',
                      dtype={"brigade": str, "line": str})
-ddata = get_data()
+ddata, bus = get_data()
 tracked_buses = ddata[['Lines', 'Brigade']].drop_duplicates().reset_index(drop=True)
-bus = define_checked(tracked_buses)
 delays = []
-for brig in tracked_buses.loc[tracked_buses['Lines'] == bus]['Brigade']:
-    check_brigade(ddata, ttable, brig)
+for b in tracked_buses['Lines']:
+    if bus != '' and b != bus:
+        continue
+    for brig in tracked_buses.loc[tracked_buses['Lines'] == b]['Brigade']:
+        print(f'{brig=}')
+        check_brigade(ddata, ttable, brig, b)
 plot_delays(delays)
-
