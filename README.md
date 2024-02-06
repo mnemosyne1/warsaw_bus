@@ -28,6 +28,7 @@ almost not tested on others so no guarantees yet)
 - prepare the code to be installable with pip install
 - probably try to split check_brigade function in [analiser_time.py](analiser_time.py)
 - remove commented code, have all other comments be in one language
+- ...
 
 ## Known issues:
 - Timetables don't save when they were downloaded – can work improperly when timetables are changed
@@ -42,3 +43,7 @@ almost not tested on others so no guarantees yet)
 - histogram of bus speeds
 - map showing all buses at one particular moment
 - maybe some regression of speed from geographical coordinates
+- ...
+
+# Credits
+warsaw geojson file was copied from [this repo](https://github.com/andilabs/warszawa-dzielnice-geojson)
