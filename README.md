@@ -15,7 +15,7 @@ To [decode](stopinfocombiner.py) this, you'll also need info about stops - downl
 Run the [script](analiser_speed.py) giving it a .csv file with locations, see the results
 ### Punctuality
 Run the [script](analiser_time.py) giving it a .csv file with locations. It silently assumes that in a directory it's called
-in there is a file called timetable_coords.csv – normally produced by [stopinfocombiner.py](stopinfocombiner.py)
+in there is a file called timetable_coords.csv – usually produced by [stopinfocombiner.py](stopinfocombiner.py)
 ### Other
 For now – none. But probably coming soon
 
