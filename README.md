@@ -7,7 +7,7 @@ _*.csv files with collected data that can serve as tests are available [here](ht
 ### Bus locations
 Run the [script](collector_locations.py) with your apikey, that's it
 ### Timetables
-[Download](collector_timetable.py) the timetables into timetable.csv (warning – this takes reaaaaly long)
+[Download](collector_timetable.py) the timetables into timetable.csv (warning – this takes reaaaally long due to the way Warsaw API about it is constructed)
 
 To [decode](stopinfocombiner.py) this, you'll also need info about stops - downloaded with [this script](collector_locations.py)
 ## Operating on data
