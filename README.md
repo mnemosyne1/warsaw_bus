@@ -3,6 +3,19 @@ _Assignment (in Polish) may be found [here](assignment.md)_
 _*.csv files with collected data that can serve as tests are available [here](https://drive.google.com/drive/folders/1dAod8YH3OrEe4XnB0qQPPMz5AHxWntuR?usp=sharing)_
 
 # Manual
+## Config file
+In [config.json](config.json) you can set some useful values:
+- collect_time: how long shall [collector_locations.py](collector_locations.py) work (default: 1 hour)
+- late_record: how old records about bus locations you consider too old to be reliable (for example sometimes you can get 'info' dated to the previous day)
+- min_time_diff: in [speed calculation](analiser_speed.py) what time difference between adjacent records is enough to calculate speed (has to be >0, shouldn't be too high)
+- speed_limit: what speed do you consider too high (used for stats about breaking the limit) – default: 55 = 50 km/h (general speed limit) + 10%
+- max_plausible_speed: what speed do you consider unreasonably high, meaning GPS records are trying to fool you – default: 90 km/h
+- punctuality_start_delta: in [punctuality check](analiser_time.py) much time do you add a safety buffer in case bus has a negative delay at the beginning of your records.
+Default: 2 minutes. Reasonable values: from 0 to 5 minutes
+- dist_from_stop: punctuality check assumes bus in on the stop if distance between the stop and the closest point on the line between records is less than this. Default: 80 metres, should be quite fine in range [50, 200]
+- min_delay: what delay is too low to be considered in the stats. Default: -5 minutes, because I consider such haste unrealistic
+- max_delay: self-explanatory. Default: 1 hour (again, realism reasons)
+- far_from_stop: when we miss the stop (due to too low dist_from_stop), we need to get back on the track. Distance from the checked stop is one of two factors considered in the script – by default it is above 500 metres
 ## Downloading the data
 ### Bus locations
 Run the [script](collector_locations.py) with your apikey, that's it
