@@ -11,7 +11,7 @@ collected, prev_list = [], []
 prev_collected, prev_repeated, repeated, late = 0, 0, 0, 0
 start_time = current_time = datetime.datetime.now()
 link = create_link(base, key, limit)
-while datetime.datetime.now() - start_time < datetime.timedelta(hours=3):
+while datetime.datetime.now() - start_time < datetime.timedelta(hours=1):
     try:
         current_time = datetime.datetime.now()
         new_list = get_from_link(link).json()['result']
