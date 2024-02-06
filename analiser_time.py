@@ -1,9 +1,8 @@
 import pandas as pd
-from analiser__helper_functions import get_data, plot_on_map
+from analiser__helper_functions import get_data, plot_on_map, plot_histogram
 from geopy.distance import geodesic
 import datetime
 import sys
-import matplotlib.pyplot as plt
 from config_functions import get_config
 
 config = get_config()
@@ -120,17 +119,6 @@ def check_brigade(data, table, brigade, line):
             prev_lat, prev_lon = cur_lat, cur_lon
 
 
-def plot_delays(delay):
-    plt.hist(delay)
-    plt.xlabel('Delay')
-    plt.ylabel('Frequency')
-    if bus != '':
-        plt.title('Delays of line ' + bus)
-    else:
-        plt.title('Delays of all lines')
-    plt.show()
-
-
 ttable = pd.read_csv('timetable_coords.csv',
                      dtype={"brigade": str, "line": str})
 ddata, bus = get_data()
@@ -142,4 +130,9 @@ for b in tracked_buses['Lines'].drop_duplicates():
     for brig in tracked_buses.loc[tracked_buses['Lines'] == b]['Brigade']:
         print(f'{b=}, {brig=}')
         check_brigade(ddata, ttable, brig, b)
-plot_delays(delays)
+
+if bus != '':
+    title = 'Delays of line ' + bus
+else:
+    title = 'Delays of all lines'
+plot_histogram(delays, 'Delay', title)

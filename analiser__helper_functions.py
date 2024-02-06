@@ -2,11 +2,13 @@ import argparse
 import pandas as pd
 import geopandas as gpd
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 
 def get_data():
-    """Returns DataFrame of collected data, link to file with which should
-        be given as an argument when calling the script"""
+    """Processes the data given as call arguments
+        :returns: tuple of 1. DataFrame of collected data,
+        2. number of line which is checked (or empty string for all lines)"""
     __parser = argparse.ArgumentParser()
     __parser.add_argument('datafile', help='name of file with bus records')
     __parser.add_argument('line', help='number of line to be checked (default = all)', default='', nargs='?')
@@ -51,3 +53,15 @@ def plot_on_map(df, plotted, plotted_name):
         )
     )
     fig.show()
+
+
+def plot_histogram(val, ox, title):
+    """Creates a histogram of given data
+    :param val: value to be plotted
+    :param ox: title of x-axis
+    :param title: title of histogram"""
+    plt.hist(val)
+    plt.xlabel(ox)
+    plt.ylabel('Frequency')
+    plt.title(title)
+    plt.show()

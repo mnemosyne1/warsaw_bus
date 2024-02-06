@@ -9,6 +9,7 @@ def create_config():
         'min_time_diff': 5,
         'speed_limit': 55,
         'max_plausible_speed': 90,
+        'min_movement_speed': 10,
         'punctuality_start_delta': 2,
         'dist_from_stop': 80,
         'min_delay': -300,
@@ -38,4 +39,3 @@ def get_config():
 
 if __name__ == '__main__':
     create_config()
-    get_config()

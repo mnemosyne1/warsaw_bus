@@ -1,7 +1,7 @@
 from geopy.distance import geodesic
 import datetime
 import sys
-from analiser__helper_functions import get_data, plot_on_map
+from analiser__helper_functions import get_data, plot_on_map, plot_histogram
 from config_functions import get_config
 
 
@@ -28,6 +28,11 @@ def analise_speed(df, line):
     speed_df['Speed'] = speed_df.apply(calculate_speed, axis=1)
     print("Speeds calculated", file=sys.stderr)
     speed_df = speed_df.drop(['VehicleNumber', 'P_lat', 'P_lon', 'P_time'], axis=1).dropna()
+    if bus != '':
+        hist_title = 'Speeds of line ' + bus
+    else:
+        hist_title = 'Speeds of all lines'
+    plot_histogram(speed_df[speed_df['Speed'] > config['min_movement_speed']]['Speed'], 'Speed', hist_title)
     speed_df = speed_df[speed_df['Speed'] > config['speed_limit']]
     speed_df['Legend'] = speed_df['Speed'].astype(str) + ': ' + speed_df['Lines'] + ', ' + speed_df['Time']
     plot_on_map(speed_df, 'Speed', 'Speed')
