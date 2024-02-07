@@ -39,7 +39,6 @@ That's ugly and slow, but produces squares, not dots – example of use is comme
 
 # TODO possible ideas:
 - map showing all buses at one particular moment
-- counting buses frequency
 
 # Credits
 warsaw geojson file was copied from [this repo](https://github.com/andilabs/warszawa-dzielnice-geojson)
