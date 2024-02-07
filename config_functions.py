@@ -10,6 +10,8 @@ def create_config():
         'speed_limit': 55,
         'max_plausible_speed': 90,
         'min_movement_speed': 10,
+        'grid_precision': 3,
+        'high_percent': 20,
         'punctuality_start_delta': 2,
         'dist_from_stop': 80,
         'min_delay': -300,

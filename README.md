@@ -12,6 +12,11 @@ In [config.json](config.json) you can set some useful values:
 – default: 55 = 50 km/h (general speed limit) + 10%
 - max_plausible_speed: what speed do you consider unreasonably high, meaning GPS records are trying to fool you – default: 90 km/h
 - min_movement_speed: minimal value of speed to be considered in the speed histogram
+- grid_precision: up to how many decimal places shall the coordinates be rounded when preparing a grid.
+Default: 3. Values lower than 2 don't produce valuable info, as well as values above 5, but should not
+break for any value ≥ 0
+- high_percent: what percentage of buses should break the limit in the place to consider the limit 'often-broken' there.
+Defaults to 50, can be adjusted anywhere between 0 and 100
 - punctuality_start_delta: in [punctuality check](analiser_time.py) much time do you add a safety buffer in case bus has a negative delay at the beginning of your records.
 Default: 2 minutes. Reasonable values: from 0 to 5 minutes
 - dist_from_stop: punctuality check assumes bus in on the stop if distance between the stop and the closest point
@@ -33,32 +38,28 @@ Run the [script](analiser_speed.py) giving it a .csv file with locations, see th
 ### Punctuality
 Run the [script](analiser_time.py) giving it a .csv file with locations. It silently assumes that in a directory it's called
 in there is a file called timetable_coords.csv – usually produced by [stopinfocombiner.py](stopinfocombiner.py)
-### Other
-For now – none. But probably coming soon
 
 # The project is still in development.
 
-## TODO list:
+# TODO list:
 - prepare the code to be installable with pip install
 - probably try to split check_brigade function in [analiser_time.py](analiser_time.py)
-- remove commented code, have all other comments be in one language
-- ...
+- add better comments here and there
 
-## Known issues:
+# Known issues:
 - Timetables don't save when they were downloaded – can work improperly when timetables are changed
 - [Punctuality check](analiser_time.py) will not work with downloaded data if the day is changing during the observed period
 - Warsaw API + GPS systems in buses are doing a lot of silly things, so probably some of them also can cause unexpected behaviours
 - Scripts generally don't check what they get, so if they're given nonsense they'll work on it – and produce nonsense
 - Calculating the speed in [analiser_speeed.py](analiser_speed.py) is quite long (time mostly consumed by the geodesic function if I'm not mistaken)
+- Plotting the grid doesn't actually produce grid, it creates a scatter of dots – that's caused by
+the library used for plotting. If you want to have a grid, check plot_grid_static from [the same file](analiser__helper_functions.py).
+That's ugly and slow, but produces squares, not dots – example of use is commented in [analiser_speeed.py](analiser_speed.py)
 - ...
 
-
-## TODO possible ideas:
-- histogram of bus speeds
-- visualisation of delays
+# TODO possible ideas:
 - map showing all buses at one particular moment
-- maybe some regression of speed from geographical coordinates
-- ...
+- counting buses frequency
 
 # Credits
 warsaw geojson file was copied from [this repo](https://github.com/andilabs/warszawa-dzielnice-geojson)

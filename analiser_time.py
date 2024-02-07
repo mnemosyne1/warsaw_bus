@@ -86,8 +86,8 @@ def check_brigade(data, table, brigade, line):
         print('Record time: ' + location_series['Time'], file=sys.stderr)
         print('Next stop time: ' + timetable_series['time'], file=sys.stderr)
         cur_lat, cur_lon = location_series['Lat'], location_series['Lon']
-        dist = closest_point(timetable_series['Lat'], timetable_series['Lon'],
-                             prev_lat, prev_lon, cur_lat, cur_lon)
+        stop_lat, stop_lon = timetable_series['Lat'], timetable_series['Lon']
+        dist = closest_point(stop_lat, stop_lon, prev_lat, prev_lon, cur_lat, cur_lon)
         if dist <= config['dist_from_stop']:
             print('Stop found!', file=sys.stderr)
             table_time = pd.to_timedelta(timetable_series['time'])
@@ -95,6 +95,9 @@ def check_brigade(data, table, brigade, line):
             delay = (actual_time - table_time).total_seconds()
             if config['min_delay'] <= delay <= config['max_delay']:
                 delays.append(delay / 60)  # else: value is unrealistic
+                if (stop_lat, stop_lon) not in stop_delay:
+                    stop_delay[(stop_lat, stop_lon)] = []
+                stop_delay[(stop_lat, stop_lon)].append(delay / 60)
             i = i + 1
             if i == table.shape[0]:
                 return
@@ -123,16 +126,21 @@ ttable = pd.read_csv('timetable_coords.csv',
                      dtype={"brigade": str, "line": str})
 ddata, bus = get_data()
 tracked_buses = ddata[['Lines', 'Brigade']].drop_duplicates().reset_index(drop=True)
-delays = []
+delays, stop_delay = [], {}
 for b in tracked_buses['Lines'].drop_duplicates():
     if bus != '' and b != bus:
         continue
     for brig in tracked_buses.loc[tracked_buses['Lines'] == b]['Brigade']:
         print(f'{b=}, {brig=}')
         check_brigade(ddata, ttable, brig, b)
-
 if bus != '':
     title = 'Delays of line ' + bus
 else:
     title = 'Delays of all lines'
 plot_histogram(delays, 'Delay', title)
+stop_map = {'Lat': [], 'Lon': [], 'Legend': []}
+for stop in stop_delay:
+    stop_map['Lat'].append(stop[0])
+    stop_map['Lon'].append(stop[1])
+    stop_map['Legend'].append(round(sum(stop_delay[stop]) / len(stop_delay[stop]), 1))
+plot_on_map(pd.DataFrame(stop_map), 'Legend', 'Average delay')

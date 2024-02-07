@@ -3,6 +3,8 @@ import pandas as pd
 import geopandas as gpd
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
+from matplotlib.colors import Normalize
+from matplotlib.cm import ScalarMappable
 
 
 def get_data():
@@ -21,7 +23,7 @@ def get_data():
         return res, __line
 
 
-def plot_on_map(df, plotted, plotted_name):
+def plot_on_map(df, plotted, plotted_name, title, size=10):
     """Creates a scatter plot on map of Warsaw. df given should have
      at least 4 columns: Lat, Lon, Legend, and the plotted one"""
     # original src file: https://github.com/andilabs/warszawa-dzielnice-geojson
@@ -41,7 +43,7 @@ def plot_on_map(df, plotted, plotted_name):
         lat=df.Lat,
         lon=df.Lon,
         mode='markers',
-        marker=dict(size=10, colorscale='viridis', color=df[plotted].astype('int64'),
+        marker=dict(size=size, colorscale='viridis', color=df[plotted].astype('int64'),
                     colorbar=dict(title=plotted_name)),
         text=df.Legend
     ))
@@ -50,7 +52,8 @@ def plot_on_map(df, plotted, plotted_name):
             style="carto-positron",
             center=dict(lon=df.Lon.mean(), lat=df.Lat.mean()),
             zoom=9
-        )
+        ),
+        title=title
     )
     fig.show()
 
@@ -64,4 +67,28 @@ def plot_histogram(val, ox, title):
     plt.xlabel(ox)
     plt.ylabel('Frequency')
     plt.title(title)
+    plt.show()
+
+
+def plot_grid_static(data, title):
+    """Creates a static plot of given data (which should create some kind
+    of grid from geographical coordinates)"""
+    map_data = gpd.read_file('warszawa-dzielnice.geojson')
+    fig, ax = plt.subplots()
+    map_data.plot(ax=ax, alpha=0.5, color='grey')
+    values = list(data.values())
+
+    # Plot the values as squares with color scale
+    for d in data:
+        ax.plot(d[0], d[1], marker='s', color=plt.cm.viridis(data[d] / max(values)),
+                markersize=10, transform=ax.transData)
+    # ctx.add_basemap(ax, crs=map_data.crs.to_string(), source=ctx.providers.OpenStreetMap.Mapnik)
+    norm = Normalize(vmin=min(values), vmax=max(values))
+    sm = ScalarMappable(cmap='viridis', norm=norm)
+    sm.set_array([])
+    plt.colorbar(sm, ax=ax, label='Value')
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.title(title)
+    plt.grid(True)
     plt.show()
