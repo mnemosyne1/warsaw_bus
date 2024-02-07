@@ -22,3 +22,6 @@ Distance from the checked stop is one of two factors taken into account in the s
 - highest_count: in [bus counter](analiser_count.py) set top limit for number. Helps in fighting depots
 from dominating your map by outnumbering the streets. Default: 1000.
 From my observations depots may produce approx. 3k/hour, up to 5k/h at night, streets: up to 400/h
+- now_timediff: [situation plotter](analiser_moment.py) plots all the buses that are now on streets of Warsaw... But what does _now_ mean?
+Actually the scripts considers timerange [asked time - now_timediff, asked time + now_timediff], where now_timediff is in seconds - defaulted to 5.
+If number is raised too high (above 10-15), some buses may be plotted more than once. If too low – some will be skipped

@@ -17,7 +17,8 @@ def create_config():
         'min_delay': -300,
         'max_delay': 3600,
         'far_from_stop': 500,
-        'highest_count': 1000
+        'highest_count': 1000,
+        'now_timediff': 5
     }
     with open('config.json', 'w') as config:
         json.dump(default_config, config, indent=4)

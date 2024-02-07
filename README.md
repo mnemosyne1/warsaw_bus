@@ -37,8 +37,5 @@ the library used for plotting. If you want to have a grid, check plot_grid_stati
 That's ugly and slow, but produces squares, not dots – example of use is commented in [analiser_speeed.py](analiser_speed.py)
 - ...
 
-# TODO possible ideas:
-- map showing all buses at one particular moment
-
 # Credits
 warsaw geojson file was copied from [this repo](https://github.com/andilabs/warszawa-dzielnice-geojson)
